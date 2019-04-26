@@ -25,6 +25,8 @@ def parse_arguments():
 		number = 404
 	elif sel_number == 3:
 		number = 95
+	elif sel_number == 5:
+		number = 1292
 	return number, sel_number
 
 def main():

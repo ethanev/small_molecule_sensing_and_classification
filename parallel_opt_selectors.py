@@ -95,7 +95,7 @@ def main():
 		name_c = ['C1_{}'.format(i) for i in range(1,13)]
 		name_o = ['O1_{}'.format(i) for i in range(1,13)]
 		name_w = ['W1_{}'.format(i) for i in range(1,13)]
-		names = name_c + name_o + name_w    
+		names = name_r + name_v + name_w    
 	extracted_feat = extracted_feat.loc[names] # this just organized the y direction...or first axis
 	# to properly do selection, going to keep the blocks of selectors together
 	blocks = [[0,1,2,3],[4,5,6,7],[8,9,10,11],[12,13,14,15],[16,17,18,19],[20,21,22,23],
@@ -189,46 +189,46 @@ def main():
 		KNN_results[str(selector_list)] = (accuracies.mean(), accuracies.std())
 
 	#### GP classification
-	classifier = 'GP' 
-	selector_lists = selector_groups 
-	GP_results = {}
-	for selector_list in selector_lists:
-		accuracies = []
-		for combo in block_combos:
-			pred_test_combined = []
-			for i in selector_list:
-				selector = []
-				for w in sorted(data.keys()):
-					selector_data = data[w]['S'+str(i)]
-					selector_data = selector_data.T.fillna(selector_data.mean(axis=1)).T 
-					selector.append(selector_data)
-				selector = pd.concat(selector, axis=1)
-				selector = selector.values.T
-				selector = selector[:, start:end]
-				mask_test = blocks[combo[0]]+blocks[combo[1]]+blocks[combo[2]]
-				mask_train = [i for i in range(labels.shape[0]) if i not in mask_test]
-				x_test = selector[mask_test,:]
-				x_train = selector[mask_train,:]
-				y_test = labels[mask_test]
-				y_train = labels[mask_train]
-				clf = get_classifier(classifier)
-				x_train, y_train = shuffle(x_train, y_train)
-				clf.fit(x_train, y_train)
-				pred_test_combined.append(clf.predict(x_test)) # might be better to work with probablilites... predict_proba
-			pred_test_combined = np.concatenate(pred_test_combined)
-			pred_test_combined = pred_test_combined.reshape((-1,y_test.shape[0]))
-			combined_vote = []
-			for i in range(y_test.shape[0]):
-				unique, counts = np.unique(pred_test_combined[:,i], return_counts=True)
-				counts = dict(zip(unique, counts))
-				majority = get_majority_vote(counts)
-				combined_vote.append(majority)
-			combined_vote = np.asarray(combined_vote)
-			accuracies.append(accuracy_score(y_test, combined_vote))
-		accuracies = np.asarray(accuracies)
-		GP_results[str(selector_list)] = (accuracies.mean(), accuracies.std())
+#	classifier = 'GP' 
+#	selector_lists = selector_groups 
+#	GP_results = {}
+#	for selector_list in selector_lists:
+#		accuracies = []
+#		for combo in block_combos:
+#			pred_test_combined = []
+#			for i in selector_list:
+#				selector = []
+#				for w in sorted(data.keys()):
+#					selector_data = data[w]['S'+str(i)]
+#					selector_data = selector_data.T.fillna(selector_data.mean(axis=1)).T 
+#					selector.append(selector_data)
+#				selector = pd.concat(selector, axis=1)
+#				selector = selector.values.T
+#				selector = selector[:, start:end]
+#				mask_test = blocks[combo[0]]+blocks[combo[1]]+blocks[combo[2]]
+#				mask_train = [i for i in range(labels.shape[0]) if i not in mask_test]
+#				x_test = selector[mask_test,:]
+#				x_train = selector[mask_train,:]
+#				y_test = labels[mask_test]
+#				y_train = labels[mask_train]
+#				clf = get_classifier(classifier)
+#				x_train, y_train = shuffle(x_train, y_train)
+#				clf.fit(x_train, y_train)
+#				pred_test_combined.append(clf.predict(x_test)) # might be better to work with probablilites... predict_proba
+#			pred_test_combined = np.concatenate(pred_test_combined)
+#			pred_test_combined = pred_test_combined.reshape((-1,y_test.shape[0]))
+#			combined_vote = []
+#			for i in range(y_test.shape[0]):
+#				unique, counts = np.unique(pred_test_combined[:,i], return_counts=True)
+#				counts = dict(zip(unique, counts))
+#				majority = get_majority_vote(counts)
+#				combined_vote.append(majority)
+#			combined_vote = np.asarray(combined_vote)
+#			accuracies.append(accuracy_score(y_test, combined_vote))
+#		accuracies = np.asarray(accuracies)
+#		GP_results[str(selector_list)] = (accuracies.mean(), accuracies.std())
 
-	combined_data = {'GP': GP_results, 'KNN': KNN_results, 'features': feature_accuracies}
+	combined_data = {'KNN': KNN_results, 'features': feature_accuracies}
 	print(combined_data)
 	pickle.dump(combined_data,open('./combined_data_{}.pkl'.format(sample_name), 'wb'))
 
