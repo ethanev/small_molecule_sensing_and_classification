@@ -70,11 +70,12 @@ def get_majority_vote(vote_count_dict):
 def main():
 	selector_groups, sample_name, sel_number = parse_arguments()
 	selector_groups = ast.literal_eval(selector_groups)
-	cheese = True
+	cheese = False
 	liquor = False
+	oil = True
 
-	data = pickle.load(open('./cheese_data.pkl','rb'))
-	extracted_feat = pickle.load(open('./featurized_cheese.pkl', 'rb'))
+	data = pickle.load(open('./oil_data.pkl','rb'))
+	extracted_feat = pickle.load(open('./featurized_oil.pkl', 'rb'))
 
 	classifier = 'RF'
 	labels = np.array([[0,1,2]])
@@ -89,7 +90,12 @@ def main():
 		name_r = ['R1_{}'.format(i) for i in range(1,13)]
 		name_v = ['V1_{}'.format(i) for i in range(1,13)]
 		name_w = ['W1_{}'.format(i) for i in range(1,13)]
-		names = name_r + name_v + name_w    
+		names = name_r + name_v + name_w   
+	if oil:
+		name_c = ['C1_{}'.format(i) for i in range(1,13)]
+		name_o = ['O1_{}'.format(i) for i in range(1,13)]
+		name_w = ['W1_{}'.format(i) for i in range(1,13)]
+		names = name_c + name_o + name_w    
 	extracted_feat = extracted_feat.loc[names] # this just organized the y direction...or first axis
 	# to properly do selection, going to keep the blocks of selectors together
 	blocks = [[0,1,2,3],[4,5,6,7],[8,9,10,11],[12,13,14,15],[16,17,18,19],[20,21,22,23],
